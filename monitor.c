@@ -15,15 +15,17 @@ int main(int argc, char* argv[])
 		dup2(pipefd[1], 1);
 		dup2(pipefd[1], 2);
 		close(pipefd[1]);
-		execlp("tail", "tail", "-F", "text.txt", "-n", "0", (char *)NULL);
+		execlp("tail", "tail", "-F", argv[3], "-n", "0", (char *)NULL);
 	} else {
 		char buffer[1024];
 		close(pipefd[1]);
-		while(read(pipefd[0], buffer, sizeof(buffer)) != 0){
+		dup2(pipefd[0], 0);
+		execlp("grep", "grep", "--line-buffered", argv[2]);
+		/*while(read(pipefd[0], buffer, sizeof(buffer)) != 0){
 			int i = 0;
 			for(i; i < sizeof(buffer); i++)
 				printf("%c", buffer[i]);
-		}
+		}*/
 	}
 
 	/*
