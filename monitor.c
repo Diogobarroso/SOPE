@@ -2,12 +2,15 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 int main(int argc, char* argv[])
 {
 	execl("/bin/tailf", "-F", "text.txt", (char *)NULL);
 
 	/*
+	char fifo[] = "fifo";
 	int nFiles = argc - 3;
 	pid_t pid[nFiles];
 	int index = 0;
@@ -18,7 +21,7 @@ int main(int argc, char* argv[])
 
 	pipe(pf);
 
-	//int mkfifo( 'FIFO' , 'chmod'); //VERIFICAR INSTRUCAO
+	mkfifo( fifo , S_IRWXU);
 	for(i; i < nFiles; i++){
 		pid[i] = fork();
 
