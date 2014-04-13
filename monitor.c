@@ -5,6 +5,9 @@
 
 int main(int argc, char* argv[])
 {
+	execl("/bin/tailf", "-F", "text.txt", (char *)NULL);
+
+	/*
 	int nFiles = argc - 3;
 	pid_t pid[nFiles];
 	int index = 0;
@@ -34,7 +37,7 @@ int main(int argc, char* argv[])
 		FILE *file = fopen( argv[index], "r");
 		printf("I'm process number %d", myPid);
 	}
-	
+	*/
 
 	return 0;
 }
