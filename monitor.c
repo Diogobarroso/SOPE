@@ -7,7 +7,24 @@
 
 int main(int argc, char* argv[])
 {
-	execl("/bin/tailf", "-F", "text.txt", (char *)NULL);
+	int pipefd[2];
+	pipe(pipefd);
+	
+	if(fork() == 0){
+		close(pipefd[0]);
+		dup2(pipefd[1], 1);
+		dup2(pipefd[1], 2);
+		close(pipefd[1]);
+		execlp("tail", "tail", "-F", "text.txt", "-n", "0", (char *)NULL);
+	} else {
+		char buffer[1024];
+		close(pipefd[1]);
+		while(read(pipefd[0], buffer, sizeof(buffer)) != 0){
+			int i = 0;
+			for(i; i < sizeof(buffer); i++)
+				printf("%c", buffer[i]);
+		}
+	}
 
 	/*
 	char fifo[] = "fifo";
