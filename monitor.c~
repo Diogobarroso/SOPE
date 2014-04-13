@@ -4,61 +4,53 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <time.h>
 
-int main(int argc, char* argv[])
-{
-	int pipefd[2];
-	pipe(pipefd);
-	
-	if(fork() == 0){
-		close(pipefd[0]);
-		dup2(pipefd[1], 1);
-		dup2(pipefd[1], 2);
-		close(pipefd[1]);
-		execl("/bin/tailf", "/bin/tailf", "-F", "text.txt", "-n", "0", (char *)NULL);
-	} else {
-		char buffer[1024];
-		close(pipefd[1]);
-		while(read(pipefd[0], buffer, sizeof(buffer)) != 0){
-			int i = 0;
-			for(i; i < sizeof(buffer); i++)
-				printf("%c", buffer[i]);
-		}
-	}
+void monitorFile(char* fineName, char* word);
 
-	/*
-	char fifo[] = "fifo";
+int main(int argc, char* argv[]){
+	int i = 3;
 	int nFiles = argc - 3;
-	pid_t pid[nFiles];
-	int index = 0;
-	int myPid;
+	int time = 0;
 
-	int pf[2]; //pipe pai-filho
-	int i = 0;
-
-	pipe(pf);
-
-	mkfifo( fifo , S_IRWXU);
-	for(i; i < nFiles; i++){
-		pid[i] = fork();
-
-		if(pid[i] > 0){
-			close(pf[0]); //fecha leitura pipe pai-filho
-		} else {
-			index = i + 3;
-			myPid = getpid();
-			close(pf[1]); //fecha escrita pipe pai-filho
-		}
+	while(time < atoi(argv[1])){
+		sleep(5);
+		for(i; i < argc; i++)
+			monitorFile(argv[i], argv[2]);
+		time += 5;
 	}
-
-	i = 0;
-
-	if( index > 0) {
-		FILE *file = fopen( argv[index], "r");
-		printf("I'm process number %d", myPid);
-	}
-	*/
 
 	return 0;
 }
 	
+void monitorFile(char* fileName, char* word){
+	int pipefd1[2];
+	int pipefd2[2];
+	pipe(pipefd1);
+	pipe(pipefd2);
+	
+	if(fork() == 0){
+		close(pipefd1[0]);
+		dup2(pipefd1[1], STDOUT_FILENO);
+		dup2(pipefd1[1], STDERR_FILENO);
+		execlp("tail", "tail", "-F", fileName, "-n", "0", (char *)NULL);
+	} else {
+		if(fork() == 0){
+			close(pipefd1[1]);
+			dup2(pipefd1[0], STDIN_FILENO);
+			close(pipefd2[0]);
+			dup2(pipefd2[1], STDOUT_FILENO);
+			dup2(pipefd2[1], STDERR_FILENO);
+			execlp("grep", "grep", "--line-buffered", word, (char *)NULL);
+		} else {
+			char buffer[1024];
+			close(pipefd2[1]);
+			time_t rawtime;
+			time(&rawtime);
+			struct tm * timeData = localtime(&rawtime);
+			while(read(pipefd2[0], buffer, sizeof(buffer)) != 0){
+				printf("%s - %s - %s", asctime(timeData), argv[3], buffer);
+			}
+		}
+	}
+}
