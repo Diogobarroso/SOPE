@@ -49,7 +49,7 @@ void monitorFile(char* fileName, char* word){
 			time(&rawtime);
 			struct tm * timeData = localtime(&rawtime);
 			while(read(pipefd2[0], buffer, sizeof(buffer)) != 0){
-				printf("%s - %s - %s", asctime(timeData), argv[3], buffer);
+				printf("%s - %s - %s", asctime(timeData), fileName, buffer);
 			}
 		}
 	}
