@@ -6,21 +6,27 @@
 int max;
 
 char SHM_NAME[] = "/shm1";
+unsigned int primes[100];
 
 void *operator(void *p) {
-	//create a buffer named q, to pass to the next thread
+	CircularQueue q;
+	queue_init(q, 10);
+
 	unsigned int prime = queue_get(p); //guaranteed prime number
 	unsigned int tmp; //the number we're going to evaluate in the cycle
 	unsigned int i;
 	pthread_t t1;
 
-	for( i = 0; i < q.capacity; i++) {}
+	//OCUPA MUTEXES
+	for( i = 0; i < q.capacity; i++) {
 		tmp = queue_get(p);
-		if(tmp % prime != 0) //if it is NOT a multiple
+		p->full--;
+		if(tmp % prime != 0) {//if it is NOT a multiple
 			queue_put(q, tmp);
+			q->full++;
 	}
 
-	if(tmp < max) {
+	if(tmp < max) { //INCOMPLETE
 		pthread_create(t1, NULL, operator, (void) q);
 		pthread_join(t1);
 	}
@@ -32,12 +38,16 @@ void *initialize() {
 	//put 2 in the shared memory
 	unsigned int i;
 
-	for( i = 3; i < max; i + 2)
-		queue_put(q, i);
+	for( i = 3; i < max; i + 2) {
+		if(q->full < q->capacity)
+			queue_put(q, i);
+		else {
+			i--;
+			sem_wait(q->full);
+		}
+	}
 
 	queue_put(q, 0);
-
-	pthread_create(t1, NULL, operator, (void) q);
 }
 
 int main(int argc, char *argv[]) {
@@ -57,7 +67,7 @@ int main(int argc, char *argv[]) {
 	terror = pthread_create(thread, NULL, initialize, NULL);
 	pthread_join(thread, tret);
 
-	qsort(); //Sort the shared memory buffer
+	qsort(); //Sort the shared memory buffer	
 };
 
 	
