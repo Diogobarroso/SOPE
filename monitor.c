@@ -33,7 +33,7 @@ void monitorFile(char* fileName, char* word){
 		close(pipefd1[0]);
 		dup2(pipefd1[1], STDOUT_FILENO);
 		dup2(pipefd1[1], STDERR_FILENO);
-		execlp("tail", "tail", "-follow=name", fileName, "-n", "0", (char *)NULL);
+		execlp("tail", "tail", "-F", fileName, "-n", "0", (char *)NULL);
 	} else {
 		if(fork() == 0){
 			close(pipefd1[1]);
