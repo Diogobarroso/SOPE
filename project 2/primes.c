@@ -19,7 +19,7 @@ void *operator(void *p) {
 	unsigned int i;
 	pthread_t t1;
 
-	//OCUPA MUTEXES
+	//ocupa semaforos
 	for( i = 0; i < q.capacity; i++) {
 		tmp = queue_get(p);
 		p->full--;
@@ -68,6 +68,12 @@ int comparisonFunction(void * a, void * b) {
 
 int main(int argc, char *argv[]) {
 	printf("Primes program started.");
+
+	if(argc > 1) {
+		printf("Use of primes: primes [max number]");
+		exit(EXIT_FAILURE);
+	}
+
 	max = sqrt(argv[argc - 1]); //no need to calculate past this point, every remaining number will be a prime
 
 	int terror; //thread error on creation

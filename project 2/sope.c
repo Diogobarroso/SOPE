@@ -10,6 +10,7 @@ int max;
 unsigned int primes[100];
 
 void *operator(void *p) {
+	printf("Aditional thread called.");
 	CircularQueue q;
 	queue_init(q, 10);
 
@@ -18,7 +19,7 @@ void *operator(void *p) {
 	unsigned int i;
 	pthread_t t1;
 
-	//OCUPA MUTEXES
+	//ocupa semaforos
 	for( i = 0; i < q.capacity; i++) {
 		tmp = queue_get(p);
 		p->full--;
@@ -34,6 +35,7 @@ void *operator(void *p) {
 }
 
 void *initialize() {
+	printf("Initial thread called.");
 	if(N > 2) {
 		pthread_t t1;
 		CircularQueue *q;
@@ -65,6 +67,7 @@ int comparisonFunction(void * a, void * b) {
 }
 
 int main(int argc, char *argv[]) {
+	printf("Primes program started.");
 	max = sqrt(argv[argc - 1]); //no need to calculate past this point, every remaining number will be a prime
 
 	int terror; //thread error on creation
