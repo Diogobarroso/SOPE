@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <math.h>
 
+#include "circbuffer.h"
+
 int N;
 int max;
 unsigned int primes[100];
@@ -52,9 +54,14 @@ void *initialize() {
 		queue_put(q, 0);
 
 		pthread_create(t1, NULL, operator, NULL);
+		pthread_join(
 	} else {
 	
 	}
+}
+
+int comparisonFunction(void * a, void * b) {
+	return (*(int *)a - *(int *)b);
 }
 
 int main(int argc, char *argv[]) {
@@ -62,12 +69,12 @@ int main(int argc, char *argv[]) {
 
 	int terror; //thread error on creation
 	pthread_t thread;
-	void **tret; //thread return
+	void * tret; //thread return
 
 	terror = pthread_create(thread, NULL, initialize, NULL);
 	pthread_join(thread, tret);
 
-	qsort(); //Sort the shared memory buffer	
+	qsort(primes, 100, sizeof(int), comparisonFunction); //Sort the shared memory buffer	
 }
 
 	
