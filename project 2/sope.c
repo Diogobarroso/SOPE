@@ -4,8 +4,9 @@
 #include <math.h>
 
 int max;
-
 unsigned int primes[100];
+
+sem_t empty, full;
 
 void *operator(void *p) {
 	CircularQueue q;
