@@ -5,6 +5,8 @@
 
 #include "circbuffer.h"
 
+#define QUEUE_SIZE 10
+
 int N;
 int max;
 unsigned int * primes;
@@ -39,6 +41,7 @@ void *initialize() {
 	if(N > 2) {
 		pthread_t t1;
 		CircularQueue *q;
+		queue_init(&q, QUEUE_SIZE);
 
 		primes[0] = 2;
 

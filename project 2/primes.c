@@ -13,8 +13,8 @@ unsigned int * primes;
 
 void *operator(void *p) {
 	printf("Aditional thread called.");
-	CircularQueue q;
-	queue_init(q, 10);
+	CircularQueue *q;
+	queue_init(&q, QUEUE_SIZE);
 
 	unsigned int prime = queue_get(p); //guaranteed prime number
 	unsigned int tmp; //the number we're going to evaluate in the cycle
