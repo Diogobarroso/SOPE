@@ -3,10 +3,9 @@
 #include <stdlib.h>
 #include <math.h>
 
+int N;
 int max;
 unsigned int primes[100];
-
-sem_t empty, full;
 
 void *operator(void *p) {
 	CircularQueue q;
@@ -33,36 +32,37 @@ void *operator(void *p) {
 }
 
 void *initialize() {
+	if(N > 2) {
+		pthread_t t1;
+		CircularQueue *q;
 
-	pthread_t t1;
-	//put 2 in the shared memory
-	unsigned int i;
+		primes[0] = 2;
 
-	for( i = 3; i < max; i + 2) {
-		if(q->full < q->capacity)
-			queue_put(q, i);
-		else {
-			i--;
-			sem_wait(q->full);
+		unsigned int i;
+
+		for( i = 3; i < max; i + 2) {
+			if(q->full < q->capacity)
+				queue_put(q, i);
+			else {
+				i--;
+				sem_wait(q->full);
+			}
 		}
-	}
 
-	queue_put(q, 0);
+		queue_put(q, 0);
+
+		pthread_create(t1, NULL, operator, NULL);
+	} else {
+	
+	}
 }
 
 int main(int argc, char *argv[]) {
 	max = sqrt(argv[argc - 1]); //no need to calculate past this point, every remaining number will be a prime
 
-	int shmid;
 	int terror; //thread error on creation
 	pthread_t thread;
 	void **tret; //thread return
-
-	if(shmid = shm_open(SHM_NAME, O_RDWR, 0600 < 0) {
-		perror("Error in shm_open()");
-	}
-
-	/*...*/
 
 	terror = pthread_create(thread, NULL, initialize, NULL);
 	pthread_join(thread, tret);
