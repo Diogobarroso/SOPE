@@ -5,6 +5,7 @@
 
 int max;
 
+char SHM_NAME[] = "/shm1";
 unsigned int primes[100];
 
 void *operator(void *p) {
