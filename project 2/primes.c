@@ -7,7 +7,7 @@
 
 int N;
 int max;
-unsigned int primes[100];
+unsigned int * primes;
 
 void *operator(void *p) {
 	printf("Aditional thread called.");
@@ -69,12 +69,13 @@ int comparisonFunction(void * a, void * b) {
 int main(int argc, char *argv[]) {
 	printf("Primes program started.");
 
-	if(argc > 1) {
+	if(argc > 2) {
 		printf("Use of primes: primes [max number]");
 		exit(EXIT_FAILURE);
 	}
 
-	max = sqrt(argv[argc - 1]); //no need to calculate past this point, every remaining number will be a prime
+	N = argc[1];
+	max = (int)sqrt(N); //no need to calculate past this point, every remaining number will be a prime
 
 	int terror; //thread error on creation
 	pthread_t thread;
@@ -83,7 +84,16 @@ int main(int argc, char *argv[]) {
 	terror = pthread_create(thread, NULL, initialize, NULL);
 	pthread_join(thread, tret);
 
-	qsort(primes, 100, sizeof(int), comparisonFunction); //Sort the shared memory buffer	
+	qsort(primes, max, sizeof(unsigned int), comparisonFunction); //Sort the shared memory buffer
+
+	//print results
+	puts("Primes numbers are:");
+	unsigned int i;
+	for(i = 0; i < max; i++) {
+		printf(" %d", primes[i]);
+	}
+
+	return 0;
 }
 
 	

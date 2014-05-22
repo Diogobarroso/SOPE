@@ -12,7 +12,7 @@ typedef struct {
 	unsigned int first; // head of the queue 
 	unsigned int last; // tail of the queue 
 	sem_t empty; // semaphores and mutex for implementing the 
-	sem_t full; // producer-consumer paradigm pthread_mutex_t mutex; 
+	sem_t full; // producer-consumer paradigm
 } CircularQueue;
 
 void queue_init(CircularQueue **q, unsigned int capacity);
