@@ -10,7 +10,8 @@ typedef unsigned long QueueElem;
 // Space for the queue elements will be allocated dinamically by queue_init() 
  
 typedef struct { 
-	QueueElem *v; // pointer to the queue buffer unsigned int capacity; // queue capacity 
+	QueueElem *v; // pointer to the queue buffer
+	unsigned int capacity; // queue capacity 
 	unsigned int first; // head of the queue 
 	unsigned int last; // tail of the queue 
 	sem_t empty; // semaphores and mutex for implementing the 

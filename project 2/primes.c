@@ -24,8 +24,10 @@ struct threadParams {
 };
 
 void *operator(void *p) {
-	printf("Aditional thread called.");
-	CircularQueue *q1 = p->q; //queue maintained with last thread
+	printf("Additional thread called.");
+
+	struct threadParams *inputParams = (struct threadParams *)p;
+	CircularQueue *q1 = inputParams->q; //queue maintained with last thread
 	CircularQueue *q2;
 	queue_init(&q2, QUEUE_SIZE);
 
@@ -37,7 +39,7 @@ void *operator(void *p) {
 	pthread_t t1;
 
 	//ocupa semaforos
-	for( i = 0; i < q.capacity; i++) {
+	for( i = 0; i < inputParams->q->capacity; i++) {
 		tmp = queue_get(p);
 		p->full--;
 		if(tmp % prime != 0) {//if it is NOT a multiple
@@ -46,8 +48,8 @@ void *operator(void *p) {
 	}
 
 	threadParams params;
-	params->q = q2;
-	params->n = (p->n) + 1;
+	params.q = q2;
+	params.n = (p->n) + 1;
 
 	if(tmp < max) { //INCOMPLETE
 		pthread_create(t1, NULL, operator, &params);
