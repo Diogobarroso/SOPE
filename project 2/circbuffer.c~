@@ -20,7 +20,11 @@ void queue_init(CircularQueue **q, unsigned int capacity) // TO DO: change retur
  
 void queue_put(CircularQueue *q, QueueElem value) 
 { 
- // TO DO BY STUDENTS 
+	sem_wait(&empty);
+	q->v[q->last] = value;
+	if(q->last < q->capacity)	
+		q->last++;
+	sem_post(%full);
 } 
  
 //------------------------------------------------------------------------------------------ 

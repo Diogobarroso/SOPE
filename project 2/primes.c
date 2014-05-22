@@ -81,12 +81,12 @@ int comparisonFunction(void * a, void * b) {
 int main(int argc, char *argv[]) {
 	printf("Primes program started.");
 
-	if(argc > 2) {
+	if(argc > 2 || atoi(argv[1])) {
 		printf("Use of primes: primes [max number]");
 		exit(EXIT_FAILURE);
 	}
 
-	N = argc[1];
+	N = argv[1];
 	max = (int)sqrt(N); //no need to calculate past this point, every remaining number will be a prime
 
 	int terror; //thread error on creation

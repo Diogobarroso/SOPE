@@ -18,7 +18,7 @@ struct threadParams {
 
 void *operator(void *p) {
 	printf("Aditional thread called.");
-	CircularQueue *q;
+	CircularQueue *q = p->q; //queue maintained with last thread
 	queue_init(&q, QUEUE_SIZE);
 
 	unsigned int prime = queue_get(p); //guaranteed prime number
