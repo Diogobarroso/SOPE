@@ -1,5 +1,5 @@
 primes: primes.o circbuffer.o
-	gcc circbuffer.o primes.o -o primes -D_REENTRANT -lpthread -Wall
+	gcc circbuffer.o primes.o -o ./bin/primes -D_REENTRANT -lpthread -Wall
 primes.o: primes.c
 	cc -c primes.c
 circbuffer.o: circbuffer.h circbuffer.c

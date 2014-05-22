@@ -21,9 +21,9 @@ void queue_init(CircularQueue **q, unsigned int capacity) // TO DO: change retur
 void queue_put(CircularQueue *q, QueueElem value) 
 { 
 	sem_wait(&empty);
-	q->v[q->last] = value;
-	if(q->last < q->capacity)	
-		q->last++;
+	q->v[q->last] = value;	
+	q->last++;
+	q->last %= capacity;
 	sem_post(%full);
 } 
  
@@ -31,8 +31,13 @@ void queue_put(CircularQueue *q, QueueElem value)
 // Removes element at the head of queue 'q' and returns its 'value' 
  
 QueueElem queue_get(CircularQueue *q) 
-{ 
- // TO DO BY STUDENTS 
+{
+	QueueElem elem:
+	sem_wait(&full);
+	elem = q->v[first];
+	q->first++;
+	q->first %= capacity;
+	sem_post(&empty);
 } 
  
 //------------------------------------------------------------------------------------------ 
@@ -41,7 +46,10 @@ QueueElem queue_get(CircularQueue *q)
  
 void queue_destroy(CircularQueue *q) 
 { 
- // TO DO BY STUDENTS 
+	free(q->q);
+	free(q->v);
+	sem_destroy(q->empty);
+	sem_destroy(q->full);
 } 
 //========================================================================================== 
 // EXAMPLE: Creation of a circular queue using queue_init()

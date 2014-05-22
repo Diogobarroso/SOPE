@@ -38,6 +38,7 @@ QueueElem queue_get(CircularQueue *q)
 	q->first++;
 	q->first %= capacity;
 	sem_post(&empty);
+	return elem;
 } 
  
 //------------------------------------------------------------------------------------------ 

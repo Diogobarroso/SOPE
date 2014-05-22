@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <pthread.h>
+#include <unistd.h>
 
 #include "circbuffer.h"
 
@@ -9,6 +11,7 @@
 
 int N;
 int max;
+
 struct dynArray{
 	unsigned int * values;
 	unsigned int size;
@@ -50,6 +53,8 @@ void *operator(void *p) {
 		pthread_create(t1, NULL, operator, &params);
 		pthread_join(t1);
 	}
+
+	queue_destroy(&q2);
 }
 
 void *initialize() {
