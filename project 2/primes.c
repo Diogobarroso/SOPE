@@ -11,9 +11,14 @@ int N;
 int max;
 unsigned int * primes;
 
+struct threadParams {
+	CircularQueue *q;
+	int n;
+};
+
 void *operator(void *p) {
 	printf("Aditional thread called.");
-	CircularQueue *q;
+	CircularQueue *q = p->q; //queue maintained with last thread
 	queue_init(&q, QUEUE_SIZE);
 
 	unsigned int prime = queue_get(p); //guaranteed prime number
@@ -58,7 +63,11 @@ void *initialize() {
 
 		queue_put(q, 0);
 
-		pthread_create(t1, NULL, operator, NULL);
+		threadParams params;
+		params.q = q;
+		params.n = 3;
+
+		pthread_create(t1, NULL, operator, &params);
 		pthread_join(
 	} else {
 	
