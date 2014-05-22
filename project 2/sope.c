@@ -68,6 +68,6 @@ int main(int argc, char *argv[]) {
 	pthread_join(thread, tret);
 
 	qsort(); //Sort the shared memory buffer	
-};
+}
 
 	
