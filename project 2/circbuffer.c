@@ -15,13 +15,14 @@ void queue_init(CircularQueue **q, unsigned int capacity) // TO DO: change retur
 	sem_init(&((*q)->full), 0, 0); 
 	(*q)->v = (QueueElem *) malloc(capacity * sizeof(QueueElem)); 
 	(*q)->capacity = capacity; 
+	printf("%d\n", (*q)->capacity);
 	(*q)->first = 0; 
 	(*q)->last = 0; 
 } 
  
 //------------------------------------------------------------------------------------------ 
 // Inserts 'value' at the tail of queue 'q' 
- 
+
 void queue_put(CircularQueue *q, QueueElem value) 
 { 
 	sem_wait(&(q->empty));
@@ -38,8 +39,11 @@ QueueElem queue_get(CircularQueue *q)
 {
 	QueueElem elem;
 	sem_wait(&(q->full));
+	printf("%d\n", q->first);
 	elem = q->v[q->first];
+	puts("after elem");
 	q->first++;
+	printf("%d\n", q->capacity);
 	q->first %= q->capacity;
 	sem_post(&(q->empty));
 	return elem;

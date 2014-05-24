@@ -13,38 +13,37 @@ int N;
 int max;
 
 struct dynArray{
-	unsigned int * values;
+	QueueElem * values;
 	unsigned int size;
 	unsigned int used;
 } primes;
 
 void *operator(void *p) {
-	printf("Additional thread called.");
+	puts("Additional thread called.");
 
 	CircularQueue *q1 = p;
 	CircularQueue *q2;
 	queue_init(&q2, QUEUE_SIZE);
 
-	unsigned int prime = queue_get(q1); //first number obtained is a guaranteed prime number
+	QueueElem prime = queue_get(&q1); //first number obtained is a guaranteed prime number
 	primes.values[primes.used] = prime;
 	primes.used++;
-	unsigned int tmp; //the number we're going to evaluate in the cycle
+	QueueElem tmp; //the number we're going to evaluate in the cycle
 	unsigned int i;
 	void * tret;
 	pthread_t t1;
-
 	
 	if(prime < max)
 		pthread_create(&t1, NULL, operator, &q2);
 
 	do {
 		tmp = queue_get(q1);
-		if(tmp % prime != 0 )
+		if(tmp % prime != 0)
 			queue_put(q2, tmp);
 	} while(tmp != 0);	
 
 	pthread_join(t1, tret);
-	queue_destroy(&q2);
+	queue_destroy(q2);
 }
 
 void *initialize() {
@@ -58,14 +57,15 @@ void *initialize() {
 		primes.values[0] = 2;
 		primes.used++;
 
-		unsigned int i;
+		pthread_create(&t1, NULL, operator, &q);
+
+		QueueElem i;
 
 		for( i = 3; i < N; i + 2)
-			queue_put(&q, i);
+			queue_put(q, i);
 
 		queue_put(q, 0);
 
-		pthread_create(&t1, NULL, operator, &q);
 		pthread_join(t1, tret);
 	} else {
 	
