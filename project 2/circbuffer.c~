@@ -27,11 +27,8 @@ void queue_put(CircularQueue *q, QueueElem value)
 
 	sem_wait(&(q->empty));
 	q->v[q->last] = value;
-
-	puts("2");
 	int tmp;
 	sem_getvalue(&(q->empty),&tmp);	
-	puts("3");
 	if(tmp != 0)	
 		q->last++;
 
@@ -45,12 +42,17 @@ void queue_put(CircularQueue *q, QueueElem value)
  
 QueueElem queue_get(CircularQueue *q) 
 {
+	puts("Get reached");
 	QueueElem elem;
 	sem_wait(&(q->full));
+	puts("sem_wait");
 	elem = q->v[q->first];
+	puts("elem");
 	if(q->first != q->last)
 		q->first++;
+	printf("%d", q->capacity);
 	q->first %= q->capacity;
+	puts("%");
 	sem_post(&(q->empty));
 	return elem;
 } 
