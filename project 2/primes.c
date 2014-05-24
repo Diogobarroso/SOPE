@@ -18,44 +18,31 @@ struct dynArray{
 	unsigned int used;
 } primes;
 
-struct threadParams {
-	CircularQueue *q;
-	int n;
-};
-
 void *operator(void *p) {
 	printf("Additional thread called.");
 
-	struct threadParams *inputParams = (struct threadParams *)p;
-	CircularQueue *q1 = inputParams->q; //queue maintained with last thread
+	CircularQueue *q1 = (CircularQueue) p;
 	CircularQueue *q2;
 	queue_init(&q2, QUEUE_SIZE);
 
-	unsigned int prime = queue_get(p); //first number obtained is a guaranteed prime number
-	
-
+	unsigned int prime = queue_get(q1); //first number obtained is a guaranteed prime number
+	primes.values[primes.used] = prime;
+	primes.used++;
 	unsigned int tmp; //the number we're going to evaluate in the cycle
 	unsigned int i;
 	pthread_t t1;
 
-	//ocupa semaforos
-	for( i = 0; i < inputParams->q->capacity; i++) {
-		tmp = queue_get(p);
-		p->full--;
-		if(tmp % prime != 0) {//if it is NOT a multiple
-			queue_put(q, tmp);
-			q->full++;
-	}
-
-	threadParams params;
-	params.q = q2;
-	params.n = (p->n) + 1;
-
-	if(tmp < max) { //INCOMPLETE
+	
+	if(prime < max)
 		pthread_create(t1, NULL, operator, &params);
-		pthread_join(t1);
-	}
 
+	do {
+		tmp = queue_get(q1);
+		if(tmp % prime != 0 )
+			queue_put(q2, tmp);
+	} while(tmp != 0);	
+
+	pthread_join(t1);
 	queue_destroy(&q2);
 }
 
@@ -72,16 +59,8 @@ void *initialize() {
 
 		unsigned int i;
 
-		for( i = 3; i < max; i + 2) {
-			/*
-			if(q->full < q->capacity)
-				queue_put(q, i);
-			else {
-				i--;
-				sem_wait(q->full);
-			}*/
+		for( i = 3; i < N; i + 2)
 			queue_put(&q, i);
-		}
 
 		queue_put(q, 0);
 
