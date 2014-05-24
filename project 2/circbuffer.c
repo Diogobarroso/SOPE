@@ -27,11 +27,8 @@ void queue_put(CircularQueue *q, QueueElem value)
 
 	sem_wait(&(q->empty));
 	q->v[q->last] = value;
-
-	puts("2");
 	int tmp;
 	sem_getvalue(&(q->empty),&tmp);	
-	puts("3");
 	if(tmp != 0)	
 		q->last++;
 

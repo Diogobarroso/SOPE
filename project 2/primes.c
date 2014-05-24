@@ -23,10 +23,7 @@ void *operator(void *p) {
 	CircularQueue *q1 = (CircularQueue *) p;
 	CircularQueue *q2;
 	queue_init(&q2, QUEUE_SIZE);
-
-	puts("Going to wait\n");
 	QueueElem prime = queue_get(q1); //first number obtained is a guaranteed prime number
-	puts("waited!\n");
 	primes.values[primes.used] = prime;
 	primes.used++;
 	QueueElem tmp; //the number we're going to evaluate in the cycle
@@ -35,23 +32,27 @@ void *operator(void *p) {
 	void * tret;
 	pthread_t t1;
 	
-	if(prime < max)
-		pthread_create(&t1, NULL, operator, &q2);
+	if(prime != 0) {
+		if(prime < max)
+			pthread_create(&t1, NULL, operator, &q2);
 
-	do {
-		tmp = queue_get(q1);
-		printf("tmp = %d\n", tmp);
-		if(tmp != previous) {
-			if(tmp % prime != 0)
-				queue_put(q2, tmp);
-		} else
-			q1->first++;
-		previous = tmp;
-	} while(tmp != 0);	
+		do {
+			tmp = queue_get(q1);
+			printf("tmp = %d\n", tmp);
+			if(tmp != previous) {
+				printf("capacity = %d", q1->capacity);
+				if(tmp % prime != 0)
+					queue_put(q2, tmp);
+			} else {
+				q1->first++;
+				previous = tmp;
+			}
+		} while(tmp != 0);	
 	
-	if(prime < max)
-		pthread_join(t1, tret);
-	queue_destroy(q2);
+		if(prime < max)
+			pthread_join(t1, tret);
+		queue_destroy(q2);
+	}
 }
 
 void *initialize() {
@@ -62,18 +63,19 @@ void *initialize() {
 		CircularQueue *q;
 		queue_init(&q, QUEUE_SIZE);
 
-		primes.values[0] = 2;
+		primes.values[primes.used] = 2;
 		primes.used++;
 
 		pthread_create(&t1, NULL, operator, (void *) q);
 
 		QueueElem i;
 
-	puts("1");
-		for( i = 3; i < N; i + 2)
+		for( i = 3; i < N; i++) {
+			printf("I've put %d in the queue\n", i);
 			queue_put(q, i);
+			i++;
+		}
 
-	puts("3");
 		queue_put(q, 0);
 
 		pthread_join(t1, tret);
@@ -112,7 +114,7 @@ int main(int argc, char *argv[]) {
 	qsort(primes.values, primes.used, sizeof(unsigned int), comparisonFunction); //Sort the shared memory buffer
 
 	//print results
-	puts("Primes numbers are:");
+	puts("Prime numbers are:");
 	unsigned int i;
 	for(i = 0; i < max; i++) {
 		printf(" %d", primes.values[i]);
