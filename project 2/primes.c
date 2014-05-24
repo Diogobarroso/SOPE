@@ -21,7 +21,7 @@ struct dynArray{
 void *operator(void *p) {
 	printf("Additional thread called.");
 
-	CircularQueue *q1 = (CircularQueue) p;
+	CircularQueue *q1 = p;
 	CircularQueue *q2;
 	queue_init(&q2, QUEUE_SIZE);
 
@@ -30,11 +30,12 @@ void *operator(void *p) {
 	primes.used++;
 	unsigned int tmp; //the number we're going to evaluate in the cycle
 	unsigned int i;
+	void * tret;
 	pthread_t t1;
 
 	
 	if(prime < max)
-		pthread_create(t1, NULL, operator, &params);
+		pthread_create(&t1, NULL, operator, &q2);
 
 	do {
 		tmp = queue_get(q1);
@@ -42,12 +43,12 @@ void *operator(void *p) {
 			queue_put(q2, tmp);
 	} while(tmp != 0);	
 
-	pthread_join(t1);
+	pthread_join(t1, tret);
 	queue_destroy(&q2);
 }
 
 void *initialize() {
-	printf("Initial thread called.");
+	puts("Initial thread called.");
 	if(N > 2) {
 		pthread_t t1;
 		void * tret;
@@ -64,11 +65,7 @@ void *initialize() {
 
 		queue_put(q, 0);
 
-		threadParams params;
-		params.q = q;
-		params.n = 3;
-
-		pthread_create(t1, NULL, operator, &params);
+		pthread_create(&t1, NULL, operator, &q);
 		pthread_join(t1, tret);
 	} else {
 	
@@ -80,29 +77,29 @@ int comparisonFunction(void * a, void * b) {
 }
 
 int main(int argc, char *argv[]) {
-	printf("Primes program started.");
+	puts("Primes program started.");
 
-	if(argc > 2 || atoi(argv[1])) {
-		printf("Use of primes: primes [max number]");
+	if(argc > 2) {
+		puts("Use of primes: primes [max number]");
 		exit(EXIT_FAILURE);
 	}
 
-	N = argv[1];
+	N = atoi(argv[1]);
 	max = (int)sqrt(N); //no need to calculate past this point, every remaining number will be a prime
 
 	//array preparation
-	primes.values = malloc((int)(1.2 * (N / ln(N))) * sizeof(unsigned int));
-	primes.size = (int)(1.2 * (N / ln(N))) * sizeof(unsigned int);
+	primes.values = malloc((int)(1.2 * (N / log(N))) * sizeof(unsigned int));
+	primes.size = (int)(1.2 * (N / log(N))) * sizeof(unsigned int);
 	primes.used = 0;
 
 	int terror; //thread error on creation
 	pthread_t thread;
 	void * tret; //thread return
 
-	terror = pthread_create(thread, NULL, initialize, NULL);
+	terror = pthread_create(&thread, NULL, initialize, NULL);
 	pthread_join(thread, tret);
 
-	qsort(primes, max, sizeof(unsigned int), comparisonFunction); //Sort the shared memory buffer
+	qsort(primes.values, primes.used, sizeof(unsigned int), comparisonFunction); //Sort the shared memory buffer
 
 	//print results
 	puts("Primes numbers are:");

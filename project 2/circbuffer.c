@@ -4,6 +4,10 @@
 // Initializes indexes of the head and tail of the queue 
 // TO DO BY STUDENTS: ADD ERROR TESTS TO THE CALLS & RETURN a value INDICATING (UN)SUCESS 
  
+
+#include "circbuffer.h"
+
+
 void queue_init(CircularQueue **q, unsigned int capacity) // TO DO: change return value 
 { 
 	*q = (CircularQueue *) malloc(sizeof(CircularQueue)); 
@@ -20,11 +24,11 @@ void queue_init(CircularQueue **q, unsigned int capacity) // TO DO: change retur
  
 void queue_put(CircularQueue *q, QueueElem value) 
 { 
-	sem_wait(&empty);
+	sem_wait(&(q->empty));
 	q->v[q->last] = value;	
 	q->last++;
-	q->last %= capacity;
-	sem_post(%full);
+	q->last %= q->capacity;
+	sem_post(&(q->full));
 } 
  
 //------------------------------------------------------------------------------------------ 
@@ -32,12 +36,12 @@ void queue_put(CircularQueue *q, QueueElem value)
  
 QueueElem queue_get(CircularQueue *q) 
 {
-	QueueElem elem:
-	sem_wait(&full);
-	elem = q->v[first];
+	QueueElem elem;
+	sem_wait(&(q->full));
+	elem = q->v[q->first];
 	q->first++;
-	q->first %= capacity;
-	sem_post(&empty);
+	q->first %= q->capacity;
+	sem_post(&(q->empty));
 	return elem;
 } 
  
@@ -47,10 +51,9 @@ QueueElem queue_get(CircularQueue *q)
  
 void queue_destroy(CircularQueue *q) 
 { 
-	free(q->q);
 	free(q->v);
-	sem_destroy(q->empty);
-	sem_destroy(q->full);
+	sem_destroy(&(q->empty));
+	sem_destroy(&(q->full));
 } 
 //========================================================================================== 
 // EXAMPLE: Creation of a circular queue using queue_init()
