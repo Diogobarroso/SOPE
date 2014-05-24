@@ -20,11 +20,11 @@ struct dynArray{
 
 void *operator(void *p) {
 	puts("Additional thread called.");
-	CircularQueue *q1 = (CircularQueue *) p;
+
+	CircularQueue *q1 = (CircularQueue **) p;
 	CircularQueue *q2;
 	queue_init(&q2, QUEUE_SIZE);
 	QueueElem prime = queue_get(q1); //first number obtained is a guaranteed prime number
-	puts("Found a prime!");
 	primes.values[primes.used] = prime;
 	primes.used++;
 	QueueElem tmp; //the number we're going to evaluate in the cycle
@@ -35,13 +35,13 @@ void *operator(void *p) {
 	
 	if(prime != 0) {
 		if(prime < max)
-			pthread_create(&t1, NULL, operator, &q2);
+			pthread_create(&t1, NULL, operator, (void *) q2);
 
 		do {
 			tmp = queue_get(q1);
 			printf("tmp = %d\n", tmp);
 			if(tmp != previous) {
-				printf("capacity = %d", q1->capacity);
+				printf("capacity = %d\n", q1->capacity);
 				if(tmp % prime != 0)
 					queue_put(q2, tmp);
 			} else {
