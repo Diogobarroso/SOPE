@@ -49,6 +49,7 @@ void *operator(void *p) {
 
 	queue_destroy(q2);
 	}
+	return NULL;
 }
 
 void *initialize() {
@@ -75,6 +76,7 @@ void *initialize() {
 		primes.values[0] = 2;
 		primes.used = 1;
 	}
+	return NULL;
 }
 
 int comparisonFunction(void * a, void * b) {
