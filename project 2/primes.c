@@ -25,65 +25,33 @@ void *operator(void *p) {
 	CircularQueue *q2;
 	queue_init(&q2, QUEUE_SIZE);
 	QueueElem prime = queue_get(q1); //first number obtained is a guaranteed prime number
-	printf("Additional thread called, the prime is %d\n", prime);
 	if(prime != 0) {
-	primes.values[primes.used] = prime;
-	primes.used++;
-	QueueElem tmp; //the number we're going to evaluate in the cycle
-	QueueElem previous = 0;
-	void * tret;
-	pthread_t t1;
-	/*
-	if(prime > max) { //if the prime number is equal or greater than sqrt(N)
+		primes.values[primes.used] = prime;
+		primes.used++;
+		QueueElem tmp; //the number we're going to evaluate in the cycle
+		QueueElem previous = 0;
+		void * tret;
+		pthread_t t1;
+
+		pthread_create(&t1, NULL, operator, (void *) q2);
 		do {
 			tmp = queue_get(q1);
-			if(tmp != 0 || tmp % prime != 0) {
-				primes.values[primes.used] = tmp;
-				primes.used++;
-			}
-		} while(tmp != 0);
-	} else {
-		pthread_create(&t1, NULL, operator, (void *) q2);
-		if(tmp % prime != 0)
-			queue_put(q2, tmp);
-	}
-	*/
-	
-
-		//if(prime < max) {
-			pthread_create(&t1, NULL, operator, (void *) q2);
-			puts("new thread created");
-
-			do {
-				tmp = queue_get(q1);
 				if(tmp != previous) {
-					if(tmp % prime != 0) {
-						printf("%d is not a multiple of %d\n", tmp, prime);
+					if(tmp % prime != 0)
 						queue_put(q2, tmp);
-					} else printf("%d is multiple of %d\n", tmp, prime);
 				} else {
 					q1->first++;
 					previous = tmp;
 				}
-			} while(tmp != 0);	
-		/*} else {
-			while(tmp != 0) {
-				primes.values[primes.used] = queue_get(q1);
-				primes.used++;
-			}
-		}
-	*/
-		//if(prime < max) {
-			queue_put(q2, 0);
-			pthread_join(t1, tret);
-		}
-		queue_destroy(q2);
-	//}
-	
+		} while(tmp != 0);	
+		queue_put(q2, 0);
+		pthread_join(t1, tret);
+
+	queue_destroy(q2);
+	}
 }
 
 void *initialize() {
-	puts("Initial thread called.");
 	if(N > 2) {
 		pthread_t t1;
 		void * tret;
@@ -97,16 +65,15 @@ void *initialize() {
 
 		QueueElem i;
 
-		for( i = 3; i <= N; i += 2) {
-			printf("Putting %d into the first queue\n", i);
+		for( i = 3; i <= N; i += 2) 
 			queue_put(q, i);
-		}
 
 		queue_put(q, 0);
 
 		pthread_join(t1, tret);
-	} else {
-	
+	} else if(N == 2) {
+		primes.values[0] = 2;
+		primes.used = 1;
 	}
 }
 
@@ -115,7 +82,6 @@ int comparisonFunction(void * a, void * b) {
 }
 
 int main(int argc, char *argv[]) {
-	puts("Primes program started.");
 
 	if(argc > 2) {
 		puts("Use of primes: primes [max number]");
@@ -123,6 +89,13 @@ int main(int argc, char *argv[]) {
 	}
 
 	N = atoi(argv[1]);
+
+	if(N < 2) {
+		puts("Primes only works for numbers > 1");
+		return 0;
+	}
+
+	printf("Calculating prime numbers between 1 and %d\n", N);
 	max = (int)sqrt(N); //no need to calculate past this point, every remaining number will be a prime
 
 	//array preparation
@@ -142,11 +115,8 @@ int main(int argc, char *argv[]) {
 	//print results
 	puts("Prime numbers are:");
 	unsigned int i;
-	for(i = 0; i < primes.used; i++) {
+	for(i = 0; i < primes.used; i++)
 		printf(" %d\n", primes.values[i]);
-	}
 
 	return 0;
 }
-
-	
