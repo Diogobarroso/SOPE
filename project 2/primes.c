@@ -126,8 +126,8 @@ int main(int argc, char *argv[]) {
 	max = (int)sqrt(N); //no need to calculate past this point, every remaining number will be a prime
 
 	//array preparation
-	primes.values = malloc((int)(1.2 * (N / log(N))) * sizeof(unsigned int));
-	primes.size = (int)(1.2 * (N / log(N))) * sizeof(unsigned int);
+	primes.values = malloc((ceil(1.2 * (double)N/log(N)) + 1) * sizeof(QueueElem));
+	primes.size = (ceil(1.2 * (double)N/log(N)) + 1) * sizeof(QueueElem);
 	primes.used = 0;
 
 	int terror; //thread error on creation
@@ -143,10 +143,8 @@ int main(int argc, char *argv[]) {
 	puts("Prime numbers are:");
 	unsigned int i;
 	for(i = 0; i < primes.used; i++) {
-		printf(" %d", primes.values[i]);
+		printf(" %d\n", primes.values[i]);
 	}
-
-	printf("Primes program completed successfully.");
 
 	return 0;
 }
