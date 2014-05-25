@@ -19,41 +19,66 @@ struct dynArray{
 } primes;
 
 void *operator(void *p) {
-	puts("Additional thread called.");
 
+	int i;
 	CircularQueue *q1 = (CircularQueue **) p;
 	CircularQueue *q2;
 	queue_init(&q2, QUEUE_SIZE);
 	QueueElem prime = queue_get(q1); //first number obtained is a guaranteed prime number
+	printf("Additional thread called, the prime is %d\n", prime);
 	primes.values[primes.used] = prime;
 	primes.used++;
 	QueueElem tmp; //the number we're going to evaluate in the cycle
-	QueueElem previous;
-	unsigned int i;
+	QueueElem previous = 0;
 	void * tret;
 	pthread_t t1;
-	
-	if(prime != 0) {
-		if(prime < max)
-			pthread_create(&t1, NULL, operator, (void *) q2);
-
+	/*
+	if(prime > max) { //if the prime number is equal or greater than sqrt(N)
 		do {
 			tmp = queue_get(q1);
-			printf("tmp = %d\n", tmp);
-			if(tmp != previous) {
-				printf("capacity = %d\n", q1->capacity);
-				if(tmp % prime != 0)
-					queue_put(q2, tmp);
-			} else {
-				q1->first++;
-				previous = tmp;
+			if(tmp != 0 || tmp % prime != 0) {
+				primes.values[primes.used] = tmp;
+				primes.used++;
 			}
-		} while(tmp != 0);	
+		} while(tmp != 0);
+	} else {
+		pthread_create(&t1, NULL, operator, (void *) q2);
+		if(tmp % prime != 0)
+			queue_put(q2, tmp);
+	}
+	*/
 	
-		if(prime < max)
+	if(prime != 0) {
+		if(prime < max) {
+			pthread_create(&t1, NULL, operator, (void *) q2);
+
+			do {
+				tmp = queue_get(q1);
+				if(tmp != previous) {
+					if(tmp % prime != 0) {
+						printf("%d is not a multiple of %d\n", tmp, prime);
+						queue_put(q2, tmp);
+					} else printf("%d is multiple of %d\n", tmp, prime);
+				} else {
+					q1->first++;
+					previous = tmp;
+				}
+			} while(tmp != 0);	
+		} else {
+			while(tmp != 0) {
+				tmp = queue_get(q1);
+				primes.values[primes.used] = tmp;
+				primes.used++;
+			}
+		}
+	
+		if(prime < max) {
+			queue_put(q2, 0);
 			pthread_join(t1, tret);
+		}
 		queue_destroy(q2);
 	}
+	
 }
 
 void *initialize() {
@@ -64,17 +89,16 @@ void *initialize() {
 		CircularQueue *q;
 		queue_init(&q, QUEUE_SIZE);
 
-		primes.values[primes.used] = 2;
+		primes.values[0] = 2;
 		primes.used++;
 
 		pthread_create(&t1, NULL, operator, (void *) q);
 
 		QueueElem i;
 
-		for( i = 3; i < N; i++) {
-			printf("I've put %d in the queue\n", i);
+		for( i = 3; i <= N; i += 2) {
+			printf("Putting %d into the first queue\n", i);
 			queue_put(q, i);
-			i++;
 		}
 
 		queue_put(q, 0);
@@ -112,12 +136,12 @@ int main(int argc, char *argv[]) {
 	terror = pthread_create(&thread, NULL, initialize, NULL);
 	pthread_join(thread, tret);
 
-	qsort(primes.values, primes.used, sizeof(unsigned int), comparisonFunction); //Sort the shared memory buffer
+	//qsort(primes.values, primes.used, sizeof(unsigned int), comparisonFunction); //Sort the shared memory buffer
 
 	//print results
 	puts("Prime numbers are:");
 	unsigned int i;
-	for(i = 0; i < max; i++) {
+	for(i = 0; i < primes.used; i++) {
 		printf(" %d", primes.values[i]);
 	}
 

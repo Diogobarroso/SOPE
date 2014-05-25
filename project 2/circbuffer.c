@@ -1,3 +1,11 @@
+#include "circbuffer.h"
+
+void queue_put(CircularQueue *q, QueueElem value) { sem_wait(&(q->empty));
+ (q->v)[q->last] = value; q->last = (q->last + 1) % q->capacity; sem_post(&(q->full)); }
+QueueElem queue_get(CircularQueue *q) { QueueElem value; sem_wait(&(q->full));
+ value = (q->v)[q->first]; q->first = (q->first + 1) % q->capacity; sem_post(&(q->empty)); return value; }
+
+/*
 //------------------------------------------------------------------------------------------ 
 // Allocates space for circular queue 'q' having 'capacity' number of elements 
 // Initializes semaphores & mutex needed to implement the producer-consumer paradigm 
@@ -7,7 +15,7 @@
 
 #include "circbuffer.h"
 
-
+*/
 void queue_init(CircularQueue **q, unsigned int capacity) // TO DO: change return value 
 { 
 	*q = (CircularQueue *) malloc(sizeof(CircularQueue)); 
@@ -18,7 +26,7 @@ void queue_init(CircularQueue **q, unsigned int capacity) // TO DO: change retur
 	(*q)->first = 0; 
 	(*q)->last = 0; 
 } 
- 
+ /*
 //------------------------------------------------------------------------------------------ 
 // Inserts 'value' at the tail of queue 'q' 
 
@@ -42,17 +50,12 @@ void queue_put(CircularQueue *q, QueueElem value)
  
 QueueElem queue_get(CircularQueue *q) 
 {
-	puts("Get reached");
 	QueueElem elem;
 	sem_wait(&(q->full));
-	puts("sem_wait");
 	elem = q->v[q->first];
-	puts("elem");
 	if(q->first != q->last)
 		q->first++;
-	printf("%d\n", q->capacity);
 	q->first %= q->capacity;
-	puts("%");
 	sem_post(&(q->empty));
 	return elem;
 } 
@@ -60,7 +63,7 @@ QueueElem queue_get(CircularQueue *q)
 //------------------------------------------------------------------------------------------ 
 // Frees space allocated for the queue elements and auxiliary management data 
 // Must be called when the queue is no more needed 
- 
+ */
 void queue_destroy(CircularQueue *q) 
 { 
 	free(q->v);
