@@ -26,6 +26,7 @@ void *operator(void *p) {
 	queue_init(&q2, QUEUE_SIZE);
 	QueueElem prime = queue_get(q1); //first number obtained is a guaranteed prime number
 	printf("Additional thread called, the prime is %d\n", prime);
+	if(prime != 0) {
 	primes.values[primes.used] = prime;
 	primes.used++;
 	QueueElem tmp; //the number we're going to evaluate in the cycle
@@ -48,9 +49,10 @@ void *operator(void *p) {
 	}
 	*/
 	
-	if(prime != 0) {
-		if(prime < max) {
+
+		//if(prime < max) {
 			pthread_create(&t1, NULL, operator, (void *) q2);
+			puts("new thread created");
 
 			do {
 				tmp = queue_get(q1);
@@ -64,20 +66,19 @@ void *operator(void *p) {
 					previous = tmp;
 				}
 			} while(tmp != 0);	
-		} else {
+		/*} else {
 			while(tmp != 0) {
-				tmp = queue_get(q1);
-				primes.values[primes.used] = tmp;
+				primes.values[primes.used] = queue_get(q1);
 				primes.used++;
 			}
 		}
-	
-		if(prime < max) {
+	*/
+		//if(prime < max) {
 			queue_put(q2, 0);
 			pthread_join(t1, tret);
 		}
 		queue_destroy(q2);
-	}
+	//}
 	
 }
 
