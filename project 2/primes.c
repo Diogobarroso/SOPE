@@ -25,9 +25,9 @@ void *operator(void *p) {
 	CircularQueue *q2;
 	queue_init(&q2, QUEUE_SIZE);
 	QueueElem prime = queue_get(q1); //first number obtained is a guaranteed prime number
+	primes.values[primes.used] = prime;
+	primes.used++;
 	if(prime < max) {
-		primes.values[primes.used] = prime;
-		primes.used++;
 		QueueElem tmp; //the number we're going to evaluate in the cycle
 		QueueElem previous = 0;
 		void * tret;
