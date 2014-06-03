@@ -7,7 +7,7 @@
 
 #include "circbuffer.h"
 
-#define QUEUE_SIZE 10
+#define QUEUE_SIZE 100
 
 int N;
 int max;
