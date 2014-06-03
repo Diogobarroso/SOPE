@@ -25,7 +25,7 @@ void *operator(void *p) {
 	CircularQueue *q2;
 	queue_init(&q2, QUEUE_SIZE);
 	QueueElem prime = queue_get(q1); //first number obtained is a guaranteed prime number
-	if(prime != 0) {
+	if(prime < max) {
 		primes.values[primes.used] = prime;
 		primes.used++;
 		QueueElem tmp; //the number we're going to evaluate in the cycle
@@ -48,6 +48,13 @@ void *operator(void *p) {
 		pthread_join(t1, tret);
 
 	queue_destroy(q2);
+	} else {
+		QueueElem tmp = queue_get(q1);
+		while(tmp != 0) {
+			primes.values[primes.used] = tmp;
+			primes.used++;
+			tmp = queue_get(q1);
+		}
 	}
 	return NULL;
 }

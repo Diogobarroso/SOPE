@@ -19,7 +19,6 @@ void *operator(void *p) {
 	unsigned int i;
 	pthread_t t1;
 
-	//ocupa semaforos
 	for( i = 0; i < q.capacity; i++) {
 		tmp = queue_get(p);
 		p->full--;
@@ -41,6 +40,7 @@ void *initialize() {
 		CircularQueue *q;
 
 		primes[0] = 2;
+		primes.used = 1;
 
 		unsigned int i;
 
@@ -56,8 +56,10 @@ void *initialize() {
 		queue_put(q, 0);
 
 		pthread_create(t1, NULL, operator, NULL);
-		pthread_join(
+		pthread_join();
 	} else {
+		primes.values[0] = 2;
+		primes.used = 1;
 	
 	}
 }
