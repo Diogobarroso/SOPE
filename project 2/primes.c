@@ -21,7 +21,7 @@ struct dynArray{
 void *operator(void *p) {
 
 	int i;
-	CircularQueue *q1 = (CircularQueue **) p;
+	CircularQueue *q1 = p;
 	CircularQueue *q2;
 	queue_init(&q2, QUEUE_SIZE);
 	QueueElem prime = queue_get(q1); //first number obtained is a guaranteed prime number
