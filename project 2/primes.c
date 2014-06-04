@@ -27,7 +27,7 @@ void *operator(void *p) {
 	QueueElem prime = queue_get(q1); //first number obtained is a guaranteed prime number
 	primes.values[primes.used] = prime;
 	primes.used++;
-	if(prime < max) {
+	if(prime <= max) {
 		QueueElem tmp; //the number we're going to evaluate in the cycle
 		QueueElem previous = 0;
 		void * tret;
@@ -126,6 +126,8 @@ int main(int argc, char *argv[]) {
 	unsigned int i;
 	for(i = 0; i < primes.used; i++)
 		printf(" %d\n", primes.values[i]);
+
+	printf("%d prime numbers were found\n", primes.used);
 
 	return 0;
 }
